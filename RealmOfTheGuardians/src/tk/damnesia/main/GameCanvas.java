@@ -17,6 +17,8 @@ import resource.ResourceManager;
 import tk.damnesia.entity.*;
 import tk.damnesia.gui.Frame;
 import tk.damnesia.gui.PopUpMessage;
+import java.sql.*;
+import tk.damnesia.entity.Obstacle;
 
 // Referenced classes of package tk.damnesia.main:
 //            HighscoreHelper
@@ -38,7 +40,6 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public static void main(String args[]) {
-
 		Frame frame = new Frame();
 		Canvas canvas = new GameCanvas();
 		canvas.setMinimumSize(new Dimension(frame.WIDTH, frame.HEIGHT - 2));
@@ -49,6 +50,9 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public void initialize() {
+		final String URL = "jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC";
+		final String USER = "root";
+		final String PASSWORD = "091321Mty!"; // 你的数据库密码
 		if (!gameOver) {
 			handler = new KeyHandler();
 			addKeyListener(handler);
@@ -57,6 +61,36 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			setMinimumSize(new Dimension(800, 448));
 			setMaximumSize(new Dimension(800, 448));
 			setPreferredSize(new Dimension(800, 448));
+		}
+		Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            stmt = conn.createStatement();
+
+            // 执行数据库操作
+            stmt.execute("CREATE DATABASE IF NOT EXISTS GameDB");
+            stmt.execute("USE GameDB");
+            stmt.execute("CREATE TABLE IF NOT EXISTS GlobalSettings (id INT PRIMARY KEY, health INT DEFAULT 100)");
+            stmt.execute("INSERT INTO GlobalSettings (id, health) VALUES (1, 100) ON DUPLICATE KEY UPDATE health = VALUES(health)");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            // 显式关闭Statement和Connection
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
 		}
 		entities = new ArrayList();
 		p1 = new Player(new Vector2f(392D, 217D), new Vector2f(16D, 16D));
@@ -277,7 +311,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 					if (i != 0
 							&& ((Bullet) ((Player) entities.get(0)).bullets
 									.get(j)).intersects((Entity) entities
-									.get(i))) {
+											.get(i))) {
 						((Player) entities.get(0)).bullets.remove(j);
 						entities.set(i, new Obstacle());
 					}
@@ -300,7 +334,8 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 					g2d.drawImage(
 							ResourceManager.bg[drawX / 8],
 							(int) ((double) (i * 64) - ((Entity) entities
-									.get(0)).getX() % 2D) - drawX, j * 64, null);
+									.get(0)).getX() % 2D) - drawX,
+							j * 64, null);
 
 			}
 
@@ -397,6 +432,10 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	public void keyTyped(KeyEvent keyevent) {
 	}
 
+	public static void delObstacle(Obstacle obstacle) {
+		entities.remove(obstacle);
+	}
+
 	private static final long serialVersionUID = 1L;
 	Frame frame;
 	private double framerate;
@@ -409,7 +448,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	String name;
 	public KeyHandler handler;
 	ArrayList keys;
-	ArrayList entities;
+	static ArrayList entities;
 	int drawX;
 	int score;
 	int highscore;
