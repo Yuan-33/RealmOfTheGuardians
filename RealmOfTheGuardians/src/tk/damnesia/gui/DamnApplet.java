@@ -1,12 +1,8 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   DamnApplet.java
-
 package tk.damnesia.gui;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+
 import tk.damnesia.main.GameCanvas;
 
 public class DamnApplet extends Applet {
@@ -14,6 +10,7 @@ public class DamnApplet extends Applet {
 	public DamnApplet() {
 	}
 
+	@Override
 	public void init() {
 		setSize(800, 450);
 		GameCanvas.applet = true;
@@ -22,9 +19,11 @@ public class DamnApplet extends Applet {
 		add(game, "Center");
 	}
 
+	@Override
 	public void start() {
 	}
 
+	@Override
 	public void stop() {
 		game.stop();
 	}

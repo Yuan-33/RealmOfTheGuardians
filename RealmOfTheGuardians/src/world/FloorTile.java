@@ -1,12 +1,8 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   FloorTile.java
-
 package world;
 
 import java.awt.Graphics;
 import java.awt.Image;
+
 import maths.Vector2f;
 import resource.ResourceManager;
 
@@ -21,13 +17,16 @@ public class FloorTile extends Tile {
 				ResourceManager.imagesheet, 240, 240, 8, 8), 16, 16);
 	}
 
+	@Override
 	public void render(Graphics g) {
 		g.drawImage(img, (int) getX(), (int) getY(), null);
 	}
 
+	@Override
 	public void update() {
 	}
 
+	@Override
 	public boolean isBlocked() {
 		return false;
 	}

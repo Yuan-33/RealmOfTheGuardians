@@ -1,12 +1,8 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   World.java
-
 package world;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+
 import maths.Vector2f;
 
 // Referenced classes of package world:

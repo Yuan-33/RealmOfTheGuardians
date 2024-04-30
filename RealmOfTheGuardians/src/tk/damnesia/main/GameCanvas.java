@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   GameCanvas.java
-
 package tk.damnesia.main;
 
 import java.awt.AlphaComposite;
@@ -34,8 +29,6 @@ import tk.damnesia.entity.Player;
 import tk.damnesia.gui.Frame;
 import tk.damnesia.gui.PopUpMessage;
 
-// Referenced classes of package tk.damnesia.main:
-//            HighscoreHelper
 
 public class GameCanvas extends Canvas implements Runnable, MouseListener,
 		KeyListener {
@@ -64,7 +57,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public void initialize() {
-		final String URL = "jdbc:mysql://localhost:3306/realm?useSSL=false&serverTimezone=UTC";
+		final String URL = "jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC";
 		final String USER = "root";
 		final String PASSWORD = "szy11408"; // 你的数据库密码
 		if (!gameOver) {
@@ -82,20 +75,18 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             stmt = conn.createStatement();
 
-            // 执行数据库操作
+            // mysql 
             stmt.execute("CREATE DATABASE IF NOT EXISTS realm");
             stmt.execute("USE realm");
             stmt.execute("CREATE TABLE IF NOT EXISTS mytable (health INT DEFAULT 1)");
-//            stmt.execute("INSERT INTO GlobalSettings (id, health) VALUES (1, 100) ON DUPLICATE KEY UPDATE health = VALUES(health)");
-//            stmt.execute("INSERT INTO mytable (health) VALUES (1)");
+//            stmt.execute("INSERT INTO mytable (health) SELECT 1 FROM mytable WHERE NOT EXISTS (SELECT * FROM mytable);");
+            stmt.execute("INSERT INTO mytable (health) VALUES (DEFAULT)");
             stmt.execute("UPDATE mytable SET health = 1");
-
-
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            // 显式关闭Statement和Connection
+            // close connection
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -236,7 +227,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			if (key.getName().equals("Q") && key.isDown()) {
 				for (Entity e : entities) {
 					if (e instanceof Player) {
-						System.out.print("shoot");
+//						System.out.print("shoot");
 						((Player)e).shoot(keys);  // 假设 Player 类有 shoot 方法
 					}
 				}
@@ -341,8 +332,8 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				entities.set(1, new PopUpMessage((new StringBuilder(
 						"GAME OVER! Score: ")).append(score).toString(),
 						new Vector2f(20D, 80D), 0.8F));
-				Thread t = new Thread(new HighscoreHelper(name, score));
-				t.start();
+//				Thread t = new Thread(new HighscoreHelper(name, score));
+//				t.start();
 				gameOver = true;
 			}
 			if (entities.get(0) instanceof Player) {

@@ -1,11 +1,11 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   PopUpMessage.java
-
 package tk.damnesia.gui;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import maths.Vector2f;
 import resource.ResourceManager;
 import tk.damnesia.entity.Entity;
@@ -34,20 +34,23 @@ public class PopUpMessage extends Entity {
 		return isDone;
 	}
 
+	@Override
 	public void update() {
 		if (opacity > 0.0F
 				&& System.currentTimeMillis() - time.longValue() > 1000L)
-			opacity -= (float) (System.currentTimeMillis() - time.longValue()) / 30000F;
+			opacity -= (System.currentTimeMillis() - time.longValue()) / 30000F;
 		if (opacity < 0.0F) {
 			isDone = true;
 			opacity = 0.0F;
 		}
 	}
 
+	@Override
 	public boolean intersects(Entity other) {
 		return false;
 	}
 
+	@Override
 	public void render(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		setRadius(new Vector2f(g.getFontMetrics().stringWidth(message) + 10,

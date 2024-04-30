@@ -1,16 +1,9 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   KeyHandler.java
-
 package input;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-// Referenced classes of package input:
-//            Key
 
 public class KeyHandler implements KeyListener {
 
@@ -35,36 +28,39 @@ public class KeyHandler implements KeyListener {
 		return keys;
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		for (int i = 0; i < keys.size(); i++)
-			if (((Key) keys.get(i)).getKeyCode() == e.getKeyCode()) {
-				System.out.println(keys.get(i).getName()+" is pressed_____");
-				((Key) keys.get(i)).setPressed(true);
-				((Key) keys.get(i)).setDown(true);
+			if (keys.get(i).getKeyCode() == e.getKeyCode()) {
+//				System.out.println(keys.get(i).getName()+" is pressed_____");
+				keys.get(i).setPressed(true);
+				keys.get(i).setDown(true);
 			}
 
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 		for (int i = 0; i < keys.size(); i++)
-			if (((Key) keys.get(i)).getKeyCode() == e.getKeyCode()) {
-				((Key) keys.get(i)).setPressed(false);
-				((Key) keys.get(i)).setDown(false);
+			if (keys.get(i).getKeyCode() == e.getKeyCode()) {
+				keys.get(i).setPressed(false);
+				keys.get(i).setDown(false);
 			}
 
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 		for (int i = 0; i < keys.size(); i++)
-			if (((Key) keys.get(i)).getKeyCode() == e.getKeyCode())
-				((Key) keys.get(i)).setDown(false);
+			if (keys.get(i).getKeyCode() == e.getKeyCode())
+				keys.get(i).setDown(false);
 
 	}
 
 	public void printkeypress() {
 		for (int i = 0; i < keys.size(); i++)
 			if (keys.get(i).isPressed){
-				System.out.println(keys.get(i).getName()+" is pressed");
+//				System.out.println(keys.get(i).getName()+" is pressed");
 			}
 
 	}

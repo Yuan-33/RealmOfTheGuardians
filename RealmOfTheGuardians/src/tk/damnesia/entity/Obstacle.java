@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Obstacle.java
-
 package tk.damnesia.entity;
 
 import java.awt.Graphics;
@@ -26,7 +21,7 @@ public class Obstacle extends Entity {
 	
 	private static final String URL = "jdbc:mysql://localhost:3306/realm?useSSL=false&serverTimezone=UTC";
 	private static final String USER = "root";
-	private static final String PASSWORD = "szy11408"; // 你的数据库密码
+	private static final String PASSWORD = "szy11408"; // mysql pwd
 	private int originHealth;
 	private boolean isDestroyed = false;
 
@@ -67,12 +62,6 @@ public class Obstacle extends Entity {
 			System.out.println("未能成功加载数据库驱动程序！");
 		}
         try {
-//            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-//            stmt = conn.createStatement();
-//            rs = stmt.executeQuery("SELECT health FROM GlobalSettings LIMIT 1");
-//            if (rs.next()) {
-//                health = rs.getInt("health");
-//            }
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT health FROM mytable LIMIT 1");
@@ -100,6 +89,7 @@ public class Obstacle extends Entity {
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             pstmt = conn.prepareStatement("UPDATE mytable SET health = ?");
+//            System.out.println("(*******");
             pstmt.setInt(1, this.originHealth+1);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -128,7 +118,7 @@ public class Obstacle extends Entity {
 
 	private void destroy() {
 //		GameCanvas.delObstacle(this);
-		System.out.println("Obstacle destroyed");
+//		System.out.println("Obstacle destroyed");
 	}
 
 	@Override

@@ -1,12 +1,8 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Bullet.java
-
 package tk.damnesia.entity;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
 import maths.Vector2f;
 import resource.ResourceManager;
 
@@ -28,11 +24,13 @@ public class Bullet extends Entity {
 		this.rotation = rotation;
 	}
 
+	@Override
 	public void update() {
-		setX(getX() + (double) speed * Math.cos(Math.toRadians(rotation)));
-		setY(getY() + (double) speed * Math.sin(Math.toRadians(rotation)));
+		setX(getX() + speed * Math.cos(Math.toRadians(rotation)));
+		setY(getY() + speed * Math.sin(Math.toRadians(rotation)));
 	}
 
+	@Override
 	public void render(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.translate(getX(), getY());

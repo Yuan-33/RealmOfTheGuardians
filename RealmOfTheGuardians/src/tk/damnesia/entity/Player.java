@@ -1,13 +1,9 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Player.java
-
 package tk.damnesia.entity;
 
-import input.Key;
 import java.awt.Graphics;
 import java.util.ArrayList;
+
+import input.Key;
 import maths.Vector2f;
 import resource.ResourceManager;
 
@@ -38,6 +34,7 @@ public class Player extends Entity {
 				32, 32));
 	}
 
+	@Override
 	public void update() {
 		currentAnimation.update();
 		for (int i = 0; i < bullets.size(); i++)
@@ -92,26 +89,26 @@ public class Player extends Entity {
 					&& ((Key) keys.get(i)).isDown()
 					&& getX() + getWidth() < 800D) {
 				if (!right)
-					setX(getX() + (double) speed);
+					setX(getX() + speed);
 				right = true;
 			}
 			if (((Key) keys.get(i)).getName().equals("left")
 					&& ((Key) keys.get(i)).isDown() && getX() > 0.0D) {
 				if (!left)
-					setX(getX() - (double) speed);
+					setX(getX() - speed);
 				left = true;
 			}
 			if (((Key) keys.get(i)).getName().equals("up")
 					&& ((Key) keys.get(i)).isDown() && getY() > 0.0D) {
 				if (!up)
-					setY(getY() - (double) speed);
+					setY(getY() - speed);
 				up = true;
 			}
 			if (((Key) keys.get(i)).getName().equals("down")
 					&& ((Key) keys.get(i)).isDown()
 					&& getY() + getHeight() < 450D) {
 				if (!down)
-					setY(getY() + (double) speed);
+					setY(getY() + speed);
 				down = true;
 			}
 		}
@@ -121,10 +118,11 @@ public class Player extends Entity {
 	public void addBullet(int mx, int my) {
 		bullets.add(new Bullet(new Vector2f(getX() + getWidth() / 2D, getY()
 				+ getHeight() / 2D), new Vector2f(16D, 2D), (int) Math
-				.toDegrees(Math.atan2((double) my - getY() - getHeight() / 2D,
-						(double) mx - getX() - getWidth() / 2D))));
+				.toDegrees(Math.atan2(my - getY() - getHeight() / 2D,
+						mx - getX() - getWidth() / 2D))));
 	}
 
+	@Override
 	public void render(Graphics g) {
 		currentAnimation
 				.render(g, (int) location.getX(), (int) location.getY());
