@@ -5,16 +5,32 @@
 
 package tk.damnesia.main;
 
-import input.Key;
-import input.KeyHandler;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AlphaComposite;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import input.Key;
+import input.KeyHandler;
 import maths.Vector2f;
 import resource.ResourceManager;
-import tk.damnesia.entity.*;
+import tk.damnesia.entity.Bullet;
+import tk.damnesia.entity.Entity;
+import tk.damnesia.entity.Obstacle;
+import tk.damnesia.entity.Player;
 import tk.damnesia.gui.Frame;
 import tk.damnesia.gui.PopUpMessage;
 
@@ -38,7 +54,6 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public static void main(String args[]) {
-
 		Frame frame = new Frame();
 		Canvas canvas = new GameCanvas();
 		canvas.setMinimumSize(new Dimension(frame.WIDTH, frame.HEIGHT - 2));
@@ -49,6 +64,9 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public void initialize() {
+		final String URL = "jdbc:mysql://localhost:3306/realm?useSSL=false&serverTimezone=UTC";
+		final String USER = "root";
+		final String PASSWORD = "szy11408"; // 你的数据库密码
 		if (!gameOver) {
 			handler = new KeyHandler();
 			addKeyListener(handler);
@@ -57,6 +75,41 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			setMinimumSize(new Dimension(800, 448));
 			setMaximumSize(new Dimension(800, 448));
 			setPreferredSize(new Dimension(800, 448));
+		}
+		Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            stmt = conn.createStatement();
+
+            // 执行数据库操作
+            stmt.execute("CREATE DATABASE IF NOT EXISTS realm");
+            stmt.execute("USE realm");
+            stmt.execute("CREATE TABLE IF NOT EXISTS mytable (health INT DEFAULT 1)");
+//            stmt.execute("INSERT INTO GlobalSettings (id, health) VALUES (1, 100) ON DUPLICATE KEY UPDATE health = VALUES(health)");
+//            stmt.execute("INSERT INTO mytable (health) VALUES (1)");
+            stmt.execute("UPDATE mytable SET health = 1");
+
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            // 显式关闭Statement和Connection
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
 		}
 		entities = new ArrayList();
 		p1 = new Player(new Vector2f(392D, 217D), new Vector2f(16D, 16D));
@@ -105,6 +158,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 		running = false;
 	}
 
+	@Override
 	public void run() {
 		long lastTime = System.nanoTime();
 		double unprocessed = 0.0D;
@@ -154,7 +208,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 					lastRenderTime = renderTime;
 				}
 				long now = System.nanoTime();
-				unprocessed += (double) (now - lastTime) / nsPerTick;
+				unprocessed += (now - lastTime) / nsPerTick;
 				lastTime = now;
 				try {
 					Thread.sleep(1L);
@@ -200,14 +254,14 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 						.hasNext();) {
 					Entity e = (Entity) iterator.next();
 					if (e instanceof Obstacle) {
-						if (e.getX() < ((Entity) entities.get(0)).getX())
-							e.setX(e.getX() + (double) blockspeed);
+						if (e.getX() < entities.get(0).getX())
+							e.setX(e.getX() + blockspeed);
 						else
-							e.setX(e.getX() - (double) blockspeed);
-						if (e.getY() < ((Entity) entities.get(0)).getY())
-							e.setY(e.getY() + (double) blockspeed);
+							e.setX(e.getX() - blockspeed);
+						if (e.getY() < entities.get(0).getY())
+							e.setY(e.getY() + blockspeed);
 						else
-							e.setY(e.getY() - (double) blockspeed);
+							e.setY(e.getY() - blockspeed);
 					}
 					if (e instanceof Player)
 						((Player) e).update(keys);
@@ -218,7 +272,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				}
 
 				checkCollisions();
-			} else if (((Key) keys.get(0)).isDown())
+			} else if (keys.get(0).isDown())
 				initialize();
 			if (score > highscore)
 				highscore = score;
@@ -282,7 +336,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 
 	private void checkCollisions() {
 		for (int i = 0; i < entities.size() - 1; i++) {
-			if (((Entity) entities.get(0)).intersects((Entity) entities
+			if (entities.get(0).intersects(entities
 					.get(i + 1)) && i != 0) {
 				entities.set(1, new PopUpMessage((new StringBuilder(
 						"GAME OVER! Score: ")).append(score).toString(),
@@ -295,12 +349,20 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				for (int j = 0; j < ((Player) entities.get(0)).bullets.size(); j++)
 					if (i != 0
 							&& ((Bullet) ((Player) entities.get(0)).bullets
-									.get(j)).intersects((Entity) entities
-									.get(i))) {
+									.get(j)).intersects(entities
+											.get(i))) 
+					{
 						((Player) entities.get(0)).bullets.remove(j);
-						entities.set(i, new Obstacle());
+//						entities.set(i, new Obstacle());
+						if (entities.get(i) instanceof Obstacle) {
+							Obstacle obstacle = (Obstacle) entities.get(i);
+							// bullet damage = 1
+							boolean flag = obstacle.takeDamage(1);
+							if (flag) {
+								entities.set(i, new Obstacle());
+							}
+						}
 					}
-
 			}
 		}
 
@@ -318,8 +380,9 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				for (int j = 0; j < 71; j++)
 					g2d.drawImage(
 							ResourceManager.bg[drawX / 8],
-							(int) ((double) (i * 64) - ((Entity) entities
-									.get(0)).getX() % 2D) - drawX, j * 64, null);
+							(int) (i * 64 - entities
+									.get(0).getX() % 2D) - drawX,
+							j * 64, null);
 
 			}
 
@@ -345,8 +408,8 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			if (gameOver) {
 				drawString(g, "GAME OVER!", 260, 220, 32);
 				drawString(g, "escape to try again!", 60, 280, 32);
-				((Entity) entities.get(1)).update();
-				((Entity) entities.get(1)).render(g);
+				entities.get(1).update();
+				entities.get(1).render(g);
 			}
 		} else {
 			g.setColor(Color.blue);
@@ -378,21 +441,27 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent mouseevent) {
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent mouseevent) {
 	}
 
+	@Override
 	public void mouseExited(MouseEvent mouseevent) {
 	}
 
+	@Override
 	public void mousePressed(MouseEvent mouseevent) {
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent mouseevent) {
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		if (menu)
 			if (e.getKeyCode() != 10) {
@@ -410,10 +479,16 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			}
 	}
 
+	@Override
 	public void keyReleased(KeyEvent keyevent) {
 	}
 
+	@Override
 	public void keyTyped(KeyEvent keyevent) {
+	}
+
+	public static void delObstacle(Obstacle obstacle) {
+		entities.remove(obstacle);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -427,8 +502,13 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	Player p1;
 	String name;
 	public KeyHandler handler;
+
 	ArrayList<Key> keys;
-	ArrayList<Entity> entities;
+	static ArrayList<Entity> entities;
+// =======
+// 	ArrayList keys;
+// 	static ArrayList entities;
+
 	int drawX;
 	int score;
 	int highscore;
