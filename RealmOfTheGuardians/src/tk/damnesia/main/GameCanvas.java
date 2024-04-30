@@ -174,6 +174,25 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 
 	private void update() {
 		keys = handler.getKeys();
+		// System.out.println("check keys pressed");
+		// handler.printkeypress();
+
+		for (Key key : keys) {
+			// System.out.println(key.getName());
+			if (key.getName().equals("Q") && key.isDown()) {
+				for (Entity e : entities) {
+					if (e instanceof Player) {
+						System.out.print("shoot");
+						((Player)e).shoot(keys);  // 假设 Player 类有 shoot 方法
+					}
+				}
+			}
+		}
+
+		for (Entity entity : entities) {
+            entity.update();
+        }
+
 		if (!menu) {
 			if (!gameOver) {
 				score++;
@@ -408,8 +427,8 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	Player p1;
 	String name;
 	public KeyHandler handler;
-	ArrayList keys;
-	ArrayList entities;
+	ArrayList<Key> keys;
+	ArrayList<Entity> entities;
 	int drawX;
 	int score;
 	int highscore;

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class KeyHandler implements KeyListener {
 
 	public KeyHandler() {
-		keys = new ArrayList();
+		keys = new ArrayList<Key>();
 		keys.add(new Key("escape", 27));
 		keys.add(new Key("up", 87));
 		keys.add(new Key("down", 83));
@@ -28,15 +28,17 @@ public class KeyHandler implements KeyListener {
 		keys.add(new Key("down", 40));
 		keys.add(new Key("left", 37));
 		keys.add(new Key("right", 39));
+		keys.add(new Key("Q", 81));
 	}
 
-	public ArrayList getKeys() {
+	public ArrayList<Key> getKeys() {
 		return keys;
 	}
 
 	public void keyPressed(KeyEvent e) {
 		for (int i = 0; i < keys.size(); i++)
 			if (((Key) keys.get(i)).getKeyCode() == e.getKeyCode()) {
+				System.out.println(keys.get(i).getName()+" is pressed_____");
 				((Key) keys.get(i)).setPressed(true);
 				((Key) keys.get(i)).setDown(true);
 			}
@@ -59,5 +61,13 @@ public class KeyHandler implements KeyListener {
 
 	}
 
-	ArrayList keys;
+	public void printkeypress() {
+		for (int i = 0; i < keys.size(); i++)
+			if (keys.get(i).isPressed){
+				System.out.println(keys.get(i).getName()+" is pressed");
+			}
+
+	}
+
+	ArrayList<Key> keys;
 }

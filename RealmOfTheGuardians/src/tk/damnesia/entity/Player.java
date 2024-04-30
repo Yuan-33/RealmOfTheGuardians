@@ -45,9 +45,12 @@ public class Player extends Entity {
 
 	}
 
-	public void update(ArrayList keys) {
+	public void update(ArrayList<Key> keys) {
 		update();
 		move(keys);
+		// check shoots
+		// checkShoot(keys);
+		shoot(keys);
 		for (int i = 0; i < bullets.size(); i++)
 			if (((Bullet) bullets.get(i)).getX() < -2D
 					* ((Bullet) bullets.get(i)).getWidth()
@@ -57,6 +60,27 @@ public class Player extends Entity {
 				bullets.remove(i);
 
 	}
+
+	public void shoot(ArrayList<Key> keys) {
+		for (Key key : keys) {
+			if (key.getName().equals("Q") && key.isDown()) {
+				int mx = (int) (getX()+1000); 
+				int my = (int) getY();
+				addBullet(mx, my);
+			}
+		}
+	}
+
+	// public void shoot() {
+
+    //     double bulletX = this.location.getX() + this.radius.getX() / 2;
+    //     double bulletY = this.location.getY() + this.radius.getY() / 2;
+    //     Vector2f bulletPosition = new Vector2f(bulletX, bulletY);
+    //     Vector2f bulletVelocity = new Vector2f(5, 0); 
+
+    //     Bullet newBullet = new Bullet(bulletPosition, bulletVelocity);
+    //     bullets.add(newBullet); 
+    // }
 
 	private void move(ArrayList keys) {
 		boolean left = false;
