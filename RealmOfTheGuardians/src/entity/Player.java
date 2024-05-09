@@ -1,14 +1,12 @@
-package tk.damnesia.entity;
+package entity;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
 
 import input.Key;
-import maths.Vector2f;
-import resource.ResourceManager;
+import maths.Vector;
+import resource.ResourceHandle;
 
-// Referenced classes of package tk.damnesia.entity:
-//            Entity, Animation, Bullet
 
 public class Player extends Entity {
 
@@ -20,17 +18,17 @@ public class Player extends Entity {
 		this.speed = speed;
 	}
 
-	public Player(Vector2f location, Vector2f radius) {
+	public Player(Vector location, Vector radius) {
 		super(location, radius);
 		speed = 3;
 		bullets = new ArrayList();
 		time = System.currentTimeMillis();
 		currentAnimation = new Animation();
-		currentAnimation.addImage(ResourceManager.resize(
-				ResourceManager.cropImage(ResourceManager.player, 0, 0, 8, 8),
+		currentAnimation.addImage(ResourceHandle.resize(
+				ResourceHandle.cropImage(ResourceHandle.player, 0, 0, 8, 8),
 				32, 32));
-		currentAnimation.addImage(ResourceManager.resize(
-				ResourceManager.cropImage(ResourceManager.player, 8, 0, 8, 8),
+		currentAnimation.addImage(ResourceHandle.resize(
+				ResourceHandle.cropImage(ResourceHandle.player, 8, 0, 8, 8),
 				32, 32));
 	}
 
@@ -60,7 +58,7 @@ public class Player extends Entity {
 
 	public void shoot(ArrayList<Key> keys) {
 		for (Key key : keys) {
-			if (key.getName().equals("Q") && key.isDown()) {
+			if (key.getName().equals("K") && key.isDown()) {
 				int mx = (int) (getX()+1000); 
 				int my = (int) getY();
 				addBullet(mx, my);
@@ -68,16 +66,6 @@ public class Player extends Entity {
 		}
 	}
 
-	// public void shoot() {
-
-    //     double bulletX = this.location.getX() + this.radius.getX() / 2;
-    //     double bulletY = this.location.getY() + this.radius.getY() / 2;
-    //     Vector2f bulletPosition = new Vector2f(bulletX, bulletY);
-    //     Vector2f bulletVelocity = new Vector2f(5, 0); 
-
-    //     Bullet newBullet = new Bullet(bulletPosition, bulletVelocity);
-    //     bullets.add(newBullet); 
-    // }
 
 	private void move(ArrayList keys) {
 		boolean left = false;
@@ -116,8 +104,8 @@ public class Player extends Entity {
 	}
 
 	public void addBullet(int mx, int my) {
-		bullets.add(new Bullet(new Vector2f(getX() + getWidth() / 2D, getY()
-				+ getHeight() / 2D), new Vector2f(16D, 2D), (int) Math
+		bullets.add(new Bullet(new Vector(getX() + getWidth() / 2D, getY()
+				+ getHeight() / 2D), new Vector(16D, 2D), (int) Math
 				.toDegrees(Math.atan2(my - getY() - getHeight() / 2D,
 						mx - getX() - getWidth() / 2D))));
 	}

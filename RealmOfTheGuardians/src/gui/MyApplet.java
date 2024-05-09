@@ -1,20 +1,20 @@
-package tk.damnesia.gui;
+package gui;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
 
-import tk.damnesia.main.GameCanvas;
+import main.Main;
 
-public class DamnApplet extends Applet {
+public class MyApplet extends Applet {
 
-	public DamnApplet() {
+	public MyApplet() {
 	}
 
 	@Override
 	public void init() {
 		setSize(800, 450);
-		GameCanvas.applet = true;
-		game = new GameCanvas();
+		Main.applet = true;
+		game = new Main();
 		setLayout(new BorderLayout());
 		add(game, "Center");
 	}
@@ -29,5 +29,5 @@ public class DamnApplet extends Applet {
 	}
 
 	private static final long serialVersionUID = 1L;
-	private GameCanvas game;
+	private Main game;
 }

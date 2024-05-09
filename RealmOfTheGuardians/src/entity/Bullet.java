@@ -1,23 +1,22 @@
-package tk.damnesia.entity;
+package entity;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import maths.Vector2f;
-import resource.ResourceManager;
+import maths.Vector;
+import resource.ResourceHandle;
 
-// Referenced classes of package tk.damnesia.entity:
-//            Entity
+
 
 public class Bullet extends Entity {
 
-	public Bullet(Vector2f location, Vector2f radius) {
+	public Bullet(Vector location, Vector radius) {
 		super(location, radius);
 		rotation = 50;
 		speed = 4;
 	}
 
-	public Bullet(Vector2f location, Vector2f radius, int rotation) {
+	public Bullet(Vector location, Vector radius, int rotation) {
 		super(location, radius);
 		this.rotation = 50;
 		speed = 4;
@@ -35,7 +34,7 @@ public class Bullet extends Entity {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.translate(getX(), getY());
 		g2d.rotate(Math.toRadians(rotation));
-		g.drawImage(ResourceManager.bullet, 0, 0, null);
+		g.drawImage(ResourceHandle.bullet, 0, 0, null);
 		g2d.rotate(Math.toRadians(-rotation));
 		g2d.translate(-getX(), -getY());
 	}

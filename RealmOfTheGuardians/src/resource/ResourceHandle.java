@@ -5,11 +5,12 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import tk.damnesia.main.GameCanvas;
 
-public class ResourceManager {
+import main.Main;
 
-	public ResourceManager() {
+public class ResourceHandle {
+
+	public ResourceHandle() {
 	}
 
 	private static BufferedImage[] initAlphabet() {

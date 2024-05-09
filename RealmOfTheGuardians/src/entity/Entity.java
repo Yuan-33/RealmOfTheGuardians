@@ -1,21 +1,21 @@
-package tk.damnesia.entity;
+package entity;
 
 import java.awt.Graphics;
 
-import maths.Vector2f;
+import maths.Vector;
 
 public abstract class Entity {
 
-	public Entity(Vector2f location, Vector2f radius) {
+	public Entity(Vector location, Vector radius) {
 		this.location = location;
 		this.radius = radius;
 	}
 
-	public void setRadius(Vector2f radius) {
+	public void setRadius(Vector radius) {
 		this.radius = radius;
 	}
 
-	public void setLocation(Vector2f location) {
+	public void setLocation(Vector location) {
 		this.location = location;
 	}
 
@@ -43,11 +43,11 @@ public abstract class Entity {
 		location.set(getX(), y);
 	}
 
-	public Vector2f getRadius() {
+	public Vector getRadius() {
 		return radius;
 	}
 
-	public Vector2f getLocation() {
+	public Vector getLocation() {
 		return location;
 	}
 
@@ -98,6 +98,6 @@ public abstract class Entity {
 
 	public abstract void render(Graphics g);
 
-	Vector2f location;
-	Vector2f radius;
+	Vector location;
+	Vector radius;
 }

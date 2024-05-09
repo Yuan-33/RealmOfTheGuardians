@@ -1,11 +1,11 @@
 package world;
 
-import maths.Vector2f;
-import tk.damnesia.entity.Entity;
+import entity.Entity;
+import maths.Vector;
 
 public abstract class Tile extends Entity {
 
-	public Tile(Vector2f location, Vector2f radius) {
+	public Tile(Vector location, Vector radius) {
 		super(location, radius);
 	}
 

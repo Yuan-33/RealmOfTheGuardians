@@ -1,4 +1,4 @@
-package tk.damnesia.entity;
+package entity;
 
 import java.awt.Graphics;
 import java.sql.Connection;
@@ -9,11 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-import maths.Vector2f;
-import resource.ResourceManager;
+import maths.Vector;
+import resource.ResourceHandle;
 
-// Referenced classes of package tk.damnesia.entity:
-//            Entity
 
 public class Obstacle extends Entity {
 	private int health;
@@ -25,7 +23,7 @@ public class Obstacle extends Entity {
 	private int originHealth;
 	private boolean isDestroyed = false;
 
-	public Obstacle(Vector2f location, Vector2f radius, byte dir) {
+	public Obstacle(Vector location, Vector radius, byte dir) {
 		super(location, radius);
 		r = new Random();
 		col = (byte) r.nextInt(8);
@@ -38,7 +36,7 @@ public class Obstacle extends Entity {
 	}
 
 	public Obstacle() {
-		super(new Vector2f(-500D, -500D), new Vector2f(16D, 16D));
+		super(new Vector(-500D, -500D), new Vector(16D, 16D));
 		r = new Random();
 		col = (byte) r.nextInt(8);
 		dir = (byte) r.nextInt(4);
@@ -59,7 +57,7 @@ public class Obstacle extends Entity {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("未能成功加载数据库驱动程序！");
+			System.out.println("CAN NOT LOAD DATABASE DRIVER！");
 		}
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -163,7 +161,7 @@ public class Obstacle extends Entity {
 
 	@Override
 	public void render(Graphics g) {
-		g.drawImage(ResourceManager.Wall[col], (int) getX(), (int) getY(), null);
+		g.drawImage(ResourceHandle.Wall[col], (int) getX(), (int) getY(), null);
 	}
 
 	Random r;

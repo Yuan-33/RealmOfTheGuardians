@@ -3,10 +3,8 @@ package world;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-import maths.Vector2f;
+import maths.Vector;
 
-// Referenced classes of package world:
-//            WallTile, FloorTile, Tile
 
 public class World {
 
@@ -18,15 +16,15 @@ public class World {
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++)
 				if (x == 0 || y == 0 || x == w - 1 || y == h - 1)
-					tiles[x][y] = new WallTile(new Vector2f(x * 16, y * 16),
-							new Vector2f(8D, 8D));
+					tiles[x][y] = new WallTile(new Vector(x * 16, y * 16),
+							new Vector(8D, 8D));
 				else
-					tiles[x][y] = new FloorTile(new Vector2f(x * 16, y * 16),
-							new Vector2f(8D, 8D));
+					tiles[x][y] = new FloorTile(new Vector(x * 16, y * 16),
+							new Vector(8D, 8D));
 
 		}
 
-		tiles[15][10] = new WallTile(new Vector2f(240D, 160D), new Vector2f(8D,
+		tiles[15][10] = new WallTile(new Vector(240D, 160D), new Vector(8D,
 				8D));
 	}
 

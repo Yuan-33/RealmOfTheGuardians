@@ -1,8 +1,8 @@
 package maths;
 
-public class Vector2f {
+public class Vector {
 
-	public Vector2f(double x, double y) {
+	public Vector(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}

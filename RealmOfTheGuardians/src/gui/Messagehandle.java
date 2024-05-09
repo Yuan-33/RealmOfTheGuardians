@@ -1,4 +1,4 @@
-package tk.damnesia.gui;
+package gui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -6,14 +6,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import maths.Vector2f;
-import resource.ResourceManager;
-import tk.damnesia.entity.Entity;
+import entity.Entity;
+import maths.Vector;
+import resource.ResourceHandle;
 
-public class PopUpMessage extends Entity {
+public class Messagehandle extends Entity {
 
-	public PopUpMessage(String message, Vector2f location) {
-		super(location, new Vector2f(message.length() * 6, 30D));
+	public Messagehandle(String message, Vector location) {
+		super(location, new Vector(message.length() * 6, 30D));
 		isDone = false;
 		f = new Font("sansserif", 0, 24);
 		time = Long.valueOf(System.currentTimeMillis());
@@ -21,8 +21,8 @@ public class PopUpMessage extends Entity {
 		this.message = message;
 	}
 
-	public PopUpMessage(String message, Vector2f location, float opacity) {
-		super(location, new Vector2f(message.length() * 6, 30D));
+	public Messagehandle(String message, Vector location, float opacity) {
+		super(location, new Vector(message.length() * 6, 30D));
 		isDone = false;
 		f = new Font("sansserif", 0, 24);
 		time = Long.valueOf(System.currentTimeMillis());
@@ -53,7 +53,7 @@ public class PopUpMessage extends Entity {
 	@Override
 	public void render(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		setRadius(new Vector2f(g.getFontMetrics().stringWidth(message) + 10,
+		setRadius(new Vector(g.getFontMetrics().stringWidth(message) + 10,
 				30D));
 		g.setFont(f);
 		g2d.setComposite(AlphaComposite.getInstance(3, opacity));
@@ -75,7 +75,7 @@ public class PopUpMessage extends Entity {
 			for (int j = 0; j < alphabet.length; j++) {
 				if (s.toLowerCase().charAt(i) != alphabet[j])
 					continue;
-				g.drawImage(ResourceManager.resize(ResourceManager.alphabet[j],
+				g.drawImage(ResourceHandle.resize(ResourceHandle.alphabet[j],
 						size, size), x + i * size, y, null);
 				break;
 			}

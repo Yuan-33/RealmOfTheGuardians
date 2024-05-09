@@ -5,9 +5,9 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 
-public class KeyHandler implements KeyListener {
+public class KeyHandle implements KeyListener {
 
-	public KeyHandler() {
+	public KeyHandle() {
 		keys = new ArrayList<Key>();
 		keys.add(new Key("escape", 27));
 		keys.add(new Key("up", 87));
@@ -22,6 +22,8 @@ public class KeyHandler implements KeyListener {
 		keys.add(new Key("left", 37));
 		keys.add(new Key("right", 39));
 		keys.add(new Key("Q", 81));
+		keys.add(new Key("J", 74));  
+		keys.add(new Key("K", 75)); 
 	}
 
 	public ArrayList<Key> getKeys() {
@@ -32,7 +34,6 @@ public class KeyHandler implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		for (int i = 0; i < keys.size(); i++)
 			if (keys.get(i).getKeyCode() == e.getKeyCode()) {
-//				System.out.println(keys.get(i).getName()+" is pressed_____");
 				keys.get(i).setPressed(true);
 				keys.get(i).setDown(true);
 			}
@@ -62,7 +63,6 @@ public class KeyHandler implements KeyListener {
 			if (keys.get(i).isPressed){
 //				System.out.println(keys.get(i).getName()+" is pressed");
 			}
-
 	}
 
 	ArrayList<Key> keys;

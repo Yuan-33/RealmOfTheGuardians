@@ -1,4 +1,4 @@
-package tk.damnesia.gui;
+package gui;
 
 import javax.swing.JFrame;
 

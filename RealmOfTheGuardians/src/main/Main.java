@@ -1,4 +1,4 @@
-package tk.damnesia.main;
+package main;
 
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -18,23 +19,27 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
+
+import entity.Bullet;
+import entity.Entity;
+import entity.Obstacle;
+import entity.Player;
+import gui.Frame;
+import gui.Messagehandle;
 import input.Key;
-import input.KeyHandler;
-import maths.Vector2f;
-import resource.ResourceManager;
-import tk.damnesia.entity.Bullet;
-import tk.damnesia.entity.Entity;
-import tk.damnesia.entity.Obstacle;
-import tk.damnesia.entity.Player;
-import tk.damnesia.gui.Frame;
-import tk.damnesia.gui.PopUpMessage;
+import input.KeyHandle;
+import maths.Vector;
+import resource.ResourceHandle;
 
 
-public class GameCanvas extends Canvas implements Runnable, MouseListener,
+public class Main extends Canvas implements Runnable, MouseListener,
 		KeyListener {
+	private Image backgroundImage;
 
-	public GameCanvas() {
-		ResourceManager.inits();
+	public Main() {
+		ResourceHandle.inits();
+		backgroundImage = new ImageIcon("res/cover.png").getImage();
 		framerate = 60D;
 		running = true;
 		gameOver = false;
@@ -48,7 +53,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 
 	public static void main(String args[]) {
 		Frame frame = new Frame();
-		Canvas canvas = new GameCanvas();
+		Canvas canvas = new Main();
 		canvas.setMinimumSize(new Dimension(frame.WIDTH, frame.HEIGHT - 2));
 		canvas.setMaximumSize(new Dimension(frame.WIDTH, frame.HEIGHT - 2));
 		canvas.setPreferredSize(new Dimension(frame.WIDTH, frame.HEIGHT - 2));
@@ -57,11 +62,11 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	public void initialize() {
-		final String URL = "jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC";
-		final String USER = "root";
-		final String PASSWORD = "szy11408"; // 你的数据库密码
+		final String URL = "jdbc:mysql://localhost:3306/?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
+		final String USER = "root"; // mysql database username
+		final String PASSWORD = "szy11408"; // mysql database password
 		if (!gameOver) {
-			handler = new KeyHandler();
+			handler = new KeyHandle();
 			addKeyListener(handler);
 			addKeyListener(this);
 			addMouseListener(this);
@@ -76,13 +81,15 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
             stmt = conn.createStatement();
 
             // mysql 
+            // create database realm
             stmt.execute("CREATE DATABASE IF NOT EXISTS realm");
             stmt.execute("USE realm");
+            // create table mytable 
             stmt.execute("CREATE TABLE IF NOT EXISTS mytable (health INT DEFAULT 1)");
-//            stmt.execute("INSERT INTO mytable (health) SELECT 1 FROM mytable WHERE NOT EXISTS (SELECT * FROM mytable);");
+            // insert health into table
             stmt.execute("INSERT INTO mytable (health) VALUES (DEFAULT)");
+            // update the value, set health of obstacle to 1
             stmt.execute("UPDATE mytable SET health = 1");
-
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -91,6 +98,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
                 try {
                     stmt.close();
                 } catch (SQLException e) {
+                	System.out.println("***");
                     System.out.println(e.getMessage());
                 }
             }
@@ -98,20 +106,21 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
                 try {
                     conn.close();
                 } catch (SQLException e) {
+                	System.out.println("***");
                     System.out.println(e.getMessage());
                 }
             }
 		}
 		entities = new ArrayList();
-		p1 = new Player(new Vector2f(392D, 217D), new Vector2f(16D, 16D));
+		p1 = new Player(new Vector(392D, 217D), new Vector(16D, 16D));
 		entities.add(p1);
-		entities.add(new PopUpMessage("STARTED THE GAME!", new Vector2f(20D,
+		entities.add(new Messagehandle("STARTED THE GAME!", new Vector(20D,
 				80D), 0.0F));
-		entities.add(new Obstacle(new Vector2f(1810D, 60D), new Vector2f(16D,
+		entities.add(new Obstacle(new Vector(1810D, 60D), new Vector(16D,
 				16D), (byte) 0));
-		entities.add(new Obstacle(new Vector2f(1310D, 150D), new Vector2f(16D,
+		entities.add(new Obstacle(new Vector(1310D, 150D), new Vector(16D,
 				16D), (byte) 0));
-		entities.add(new Obstacle(new Vector2f(5210D, 260D), new Vector2f(16D,
+		entities.add(new Obstacle(new Vector(5210D, 260D), new Vector(16D,
 				16D), (byte) 0));
 		gameOver = false;
 		score = 0;
@@ -121,21 +130,21 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	}
 
 	private void prepareImages() {
-		for (int i = 0; i < ResourceManager.alphabet.length; i++)
-			prepareImage(ResourceManager.alphabet[i], null);
+		for (int i = 0; i < ResourceHandle.alphabet.length; i++)
+			prepareImage(ResourceHandle.alphabet[i], null);
 
-		for (int i = 0; i < ResourceManager.Wall.length; i++) {
-			prepareImage(ResourceManager.Wall[i], null);
-			prepareImage(ResourceManager.WallDownLeft[i], null);
-			prepareImage(ResourceManager.WallDownRight[i], null);
-			prepareImage(ResourceManager.WallTopRight[i], null);
-			prepareImage(ResourceManager.WallTopLeft[i], null);
+		for (int i = 0; i < ResourceHandle.Wall.length; i++) {
+			prepareImage(ResourceHandle.Wall[i], null);
+			prepareImage(ResourceHandle.WallDownLeft[i], null);
+			prepareImage(ResourceHandle.WallDownRight[i], null);
+			prepareImage(ResourceHandle.WallTopRight[i], null);
+			prepareImage(ResourceHandle.WallTopLeft[i], null);
 		}
 
-		for (int i = 0; i < ResourceManager.bg.length; i++)
-			prepareImage(ResourceManager.bg[i], null);
+		for (int i = 0; i < ResourceHandle.bg.length; i++)
+			prepareImage(ResourceHandle.bg[i], null);
 
-		prepareImage(ResourceManager.bullet, null);
+		prepareImage(ResourceHandle.bullet, null);
 	}
 
 	public void start() {
@@ -219,16 +228,11 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 
 	private void update() {
 		keys = handler.getKeys();
-		// System.out.println("check keys pressed");
-		// handler.printkeypress();
-
 		for (Key key : keys) {
-			// System.out.println(key.getName());
 			if (key.getName().equals("Q") && key.isDown()) {
 				for (Entity e : entities) {
 					if (e instanceof Player) {
-//						System.out.print("shoot");
-						((Player)e).shoot(keys);  // 假设 Player 类有 shoot 方法
+						((Player)e).shoot(keys);  // shoot
 					}
 				}
 			}
@@ -258,8 +262,8 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 						((Player) e).update(keys);
 					else
 						e.update();
-					if (e instanceof PopUpMessage)
-						((PopUpMessage) e).isDone();
+					if (e instanceof Messagehandle)
+						((Messagehandle) e).isDone();
 				}
 
 				checkCollisions();
@@ -271,14 +275,14 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				entities.add(new Obstacle());
 				entities.set(
 						1,
-						new PopUpMessage((new StringBuilder(String
+						new Messagehandle((new StringBuilder(String
 								.valueOf(name))).append(" STARTED THE GAME!")
-								.toString(), new Vector2f(20D, 80D)));
+								.toString(), new Vector(20D, 80D)));
 			}
 			if (score % 1000 == 0)
 				blockspeed += 0.1F;
 			if (score == 500) {
-				entities.set(1, new PopUpMessage("Awesome!", new Vector2f(20D,
+				entities.set(1, new Messagehandle("COOL!", new Vector(20D,
 						80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
@@ -286,36 +290,36 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				blockspeed += 0.1F;
 			}
 			if (score == 1000) {
-				entities.set(1, new PopUpMessage("Dodging like a boss!",
-						new Vector2f(20D, 80D)));
+				entities.set(1, new Messagehandle("YOU ARE GREAT!",
+						new Vector(20D, 80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 			}
 			if (score == 2000) {
-				entities.set(1, new PopUpMessage("wcfs96 is a cheater!",
-						new Vector2f(20D, 80D)));
+				entities.set(1, new Messagehandle("AWESOME!",
+						new Vector(20D, 80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 			}
 			if (score == 3000) {
-				entities.set(1, new PopUpMessage("I c what you did there...",
-						new Vector2f(20D, 80D)));
+				entities.set(1, new Messagehandle("YOU ARE AMAZING!",
+						new Vector(20D, 80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 			}
 			if (score == 4000) {
-				entities.set(1, new PopUpMessage("Needs MOAR obstacles!",
-						new Vector2f(20D, 80D)));
+				entities.set(1, new Messagehandle("YOU CAN NOT BE BETTER!",
+						new Vector(20D, 80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
 			}
 			if (score == 5000) {
-				entities.set(1, new PopUpMessage("You dead yet?", new Vector2f(
+				entities.set(1, new Messagehandle("YOU GUARD THE REALM!", new Vector(
 						20D, 80D)));
 				entities.add(new Obstacle());
 				entities.add(new Obstacle());
@@ -329,11 +333,9 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 		for (int i = 0; i < entities.size() - 1; i++) {
 			if (entities.get(0).intersects(entities
 					.get(i + 1)) && i != 0) {
-				entities.set(1, new PopUpMessage((new StringBuilder(
+				entities.set(1, new Messagehandle((new StringBuilder(
 						"GAME OVER! Score: ")).append(score).toString(),
-						new Vector2f(20D, 80D), 0.8F));
-//				Thread t = new Thread(new HighscoreHelper(name, score));
-//				t.start();
+						new Vector(20D, 80D), 0.8F));
 				gameOver = true;
 			}
 			if (entities.get(0) instanceof Player) {
@@ -344,7 +346,6 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 											.get(i))) 
 					{
 						((Player) entities.get(0)).bullets.remove(j);
-//						entities.set(i, new Obstacle());
 						if (entities.get(i) instanceof Obstacle) {
 							Obstacle obstacle = (Obstacle) entities.get(i);
 							// bullet damage = 1
@@ -370,7 +371,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			for (int i = 0; i < 76; i++) {
 				for (int j = 0; j < 71; j++)
 					g2d.drawImage(
-							ResourceManager.bg[drawX / 8],
+							ResourceHandle.bg[drawX / 8],
 							(int) (i * 64 - entities
 									.get(0).getX() % 2D) - drawX,
 							j * 64, null);
@@ -403,13 +404,15 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 				entities.get(1).render(g);
 			}
 		} else {
-			g.setColor(Color.blue);
-			g.fillRect(0, 0, 800, 450);
+		     Color silver = new Color(192, 192, 192); // 银色的RGB值
+		     g.setColor(silver);
+		     g.fillRect(0, 0, 800, 450);
+//		     g.drawImage(backgroundImage, 0, 0, this.getWidth(), this.getHeight(), this);
 			drawString(g, "Please enter your name", 20, 20, 32);
 			drawString(g, name, 20, 70, 24);
-			drawString(g, "WASD or arrow keys to move.", 20, 200, 16);
-			drawString(g, "Try to avoid the boxes and beat the highscore!", 20,
-					230, 16);
+			drawString(g, "WASD to move and K to shoot.", 20, 340, 16);
+			drawString(g, "Fight and Guard the Realm!", 20,
+					370, 16);
 			drawString(g, "Press Enter to start...", 20, 400, 16);
 		}
 	}
@@ -423,7 +426,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 			for (int j = 0; j < alphabet.length; j++) {
 				if (s.toLowerCase().charAt(i) != alphabet[j])
 					continue;
-				g.drawImage(ResourceManager.resize(ResourceManager.alphabet[j],
+				g.drawImage(ResourceHandle.resize(ResourceHandle.alphabet[j],
 						size, size), x + i * size, y, null);
 				break;
 			}
@@ -492,7 +495,7 @@ public class GameCanvas extends Canvas implements Runnable, MouseListener,
 	public boolean menu;
 	Player p1;
 	String name;
-	public KeyHandler handler;
+	public KeyHandle handler;
 
 	ArrayList<Key> keys;
 	static ArrayList<Entity> entities;

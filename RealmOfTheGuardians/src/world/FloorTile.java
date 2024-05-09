@@ -3,18 +3,16 @@ package world;
 import java.awt.Graphics;
 import java.awt.Image;
 
-import maths.Vector2f;
-import resource.ResourceManager;
+import maths.Vector;
+import resource.ResourceHandle;
 
-// Referenced classes of package world:
-//            Tile
 
 public class FloorTile extends Tile {
 
-	public FloorTile(Vector2f location, Vector2f radius) {
+	public FloorTile(Vector location, Vector radius) {
 		super(location, radius);
-		img = ResourceManager.resize(ResourceManager.cropImage(
-				ResourceManager.imagesheet, 240, 240, 8, 8), 16, 16);
+		img = ResourceHandle.resize(ResourceHandle.cropImage(
+				ResourceHandle.imagesheet, 240, 240, 8, 8), 16, 16);
 	}
 
 	@Override
